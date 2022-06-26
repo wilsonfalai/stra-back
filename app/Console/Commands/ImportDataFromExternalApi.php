@@ -5,7 +5,9 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Film;
 use App\Models\FilmPeople;
+use App\Models\FilmPlanet;
 use App\Models\People;
+use App\Models\Planet;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
@@ -54,16 +56,18 @@ class ImportDataFromExternalApi extends Command
                 $film->save();
                 //dd();
 
+
+                //Save People
                 foreach($response['characters'] as $r){
 
-                    //Save People
-                    $response = Http::get($r);
-                    $people = People::where('name', $response['name'])->first();
+
+                    $data = Http::get($r);
+                    $people = People::where('name', $data['name'])->first();
 
                     if(!$people){
                         $people = new People();
-                        $people->name = $response['name'];
-                        $people->gender = $response['gender'];
+                        $people->name = $data['name'];
+                        $people->gender = $data['gender'];
                         $people->save();
                     }
 
@@ -72,6 +76,28 @@ class ImportDataFromExternalApi extends Command
                     $filmPeople->people_id = $people->id;
                     $filmPeople->film_id = $film->id;
                     $filmPeople->save();
+
+                }
+
+                //Save Planet
+                foreach($response['planets'] as $r){
+
+
+                    $data = Http::get($r);
+                    $planet = Planet::where('name', $data['name'])->first();
+
+                    if(!$planet){
+                        $planet = new Planet();
+                        $planet->name = $data['name'];
+                        $planet->population = $data['population'];
+                        $planet->save();
+                    }
+
+                    //Save Film has People - Pivot
+                    $filmPlanet= new FilmPlanet();
+                    $filmPlanet->planet_id = $planet->id;
+                    $filmPlanet->film_id = $film->id;
+                    $filmPlanet->save();
 
                 }
 

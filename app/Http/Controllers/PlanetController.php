@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Film;
+use App\Models\Planet;
 use Illuminate\Http\Request;
 
-class FilmController extends Controller
+class PlanetController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,8 +14,7 @@ class FilmController extends Controller
      */
     public function index()
     {
-        //return Film::all();
-        return Film::with(['peoples','planets'])->get();
+        //
     }
 
     /**
@@ -37,7 +36,7 @@ class FilmController extends Controller
      */
     public function show($id)
     {
-        return Film::with(['peoples','planets'])->find($id);
+        return Planet::find($id);
     }
 
     /**

@@ -23,8 +23,14 @@ Route::get('/', function () {
 
 Route::get('/test', function () {
 
-    $film = Film::where('title', 'The Empire Strikes Back')->first();
-    dd($film['title']);
+    $response = Http::get("https://swapi.dev/api/films/1");
+    dump($response->json());
+    dump($response['characters']);
+    dump($response['planets']);
+    dd();
+
+    //$film = Film::where('title', 'The Empire Strikes Back')->first();
+    //dd($film['title']);
 });
 
 
