@@ -21,6 +21,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/test', function () {
+
+    $film = Film::where('title', 'The Empire Strikes Back')->first();
+    dd($film['title']);
+});
+
+
+
 Route::get('/read', function () {
 
     $film = Film::find(2);

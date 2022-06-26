@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\Film;
 use App\Models\FilmPeople;
 use App\Models\People;
+use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -40,33 +41,52 @@ class ImportDataFromExternalApi extends Command
 
             //Save Film
             $response = Http::get("https://swapi.dev/api/films/{$filmId}");
-            $film= new Film();
-            $film->title = $response['title'];
-            $film->director = $response['director'];
-            $film->save();
+
+            $filmSearch = Film::where('title', $response['title'])->first();
+
+            //$this->info($filmSearch);
             //dd();
 
-            foreach($response['characters'] as $r){
+            if(!$filmSearch){
+                $film= new Film();
+                $film->title = $response['title'];
+                $film->director = $response['director'];
+                $film->save();
+                //dd();
 
-                //Save People
-                $response = Http::get($r);
-                $people = new People();
-                $people->name = $response['name'];
-                $people->gender = $response['gender'];
-                $people->save();
+                foreach($response['characters'] as $r){
 
-                //Save Film has People - Pivot
-                $filmPeople= new FilmPeople();
-                $filmPeople->people_id = $people->id;
-                $filmPeople->film_id = $film->id;
-                $filmPeople->save();
+                    //Save People
+                    $response = Http::get($r);
+                    $people = People::where('name', $response['name'])->first();
 
+                    if(!$people){
+                        $people = new People();
+                        $people->name = $response['name'];
+                        $people->gender = $response['gender'];
+                        $people->save();
+                    }
+
+                    //Save Film has People - Pivot
+                    $filmPeople= new FilmPeople();
+                    $filmPeople->people_id = $people->id;
+                    $filmPeople->film_id = $film->id;
+                    $filmPeople->save();
+
+                }
+
+                DB::commit();
+                $this->info('The command was successful!');
+            } else {
+                throw new Exception('Filme já existe');
             }
 
-            DB::commit();
+
 
         } catch (Throwable $e) {
             DB::rollback();
+            $this->info($e->getMessage());
+            //$this->info('The command was successful!');
         }
 
     }
