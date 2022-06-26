@@ -16,12 +16,12 @@ return new class extends Migration
         Schema::create('films_peoples', function (Blueprint $table) {
             $table->id();
 
-            $table->string('film_id');
+            $table->unsignedBigInteger('film_id');
             $table->foreign('film_id')
               ->references('id')
               ->on('films')->onDelete('cascade');
 
-            $table->string('people_id');
+            $table->unsignedBigInteger('people_id');
             $table->foreign('people_id')
               ->references('id')
               ->on('peoples')->onDelete('cascade');
