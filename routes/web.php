@@ -1,5 +1,9 @@
 <?php
 
+use App\Models\Film;
+use App\Models\FilmPeople;
+use App\Models\People;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +19,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/read', function () {
+
+    $film = Film::find(2);
+    //dd($film->peoples);
+
+    foreach($film->peoples as $p){
+        dump($p['name']);
+    }
 });
